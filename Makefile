@@ -3,9 +3,10 @@ IMAGE_TAG = latest
 CLUSTER_NAME = hextris-cluster
 HELM_CHART_DIR = ./helm/hextris
 
-.PHONY: build load deploy clean
+.PHONY: create-cluster build load deploy clean
 
-all: build load deploy
+create-cluster:
+	kind create cluster --name $(CLUSTER_NAME)
 
 build:
 	docker build -t $(IMAGE_NAME):$(IMAGE_TAG) .
@@ -20,3 +21,5 @@ deploy:
 clean:
 	helm uninstall $(IMAGE_NAME) || true
 	kubectl delete pods -l app=$(IMAGE_NAME) || true
+
+all: create-cluster build load deploy
