@@ -13,9 +13,15 @@ create-cluster:
 	fi
 
 build:
-	docker build -t $(IMAGE_NAME):$(IMAGE_TAG) .
+	@if docker image inspect $(IMAGE_NAME):$(IMAGE_TAG) > /dev/null 2>&1; then \
+		echo "Docker image $(IMAGE_NAME):$(IMAGE_TAG) already exists, skipping build"; \
+	else \
+		echo "Building Docker image..."; \
+		docker build -t $(IMAGE_NAME):$(IMAGE_TAG) .; \
+	fi
 
 load:
+	@echo "Loading image into Kind cluster..."
 	kind load docker-image $(IMAGE_NAME):$(IMAGE_TAG) --name $(CLUSTER_NAME)
 
 deploy:
