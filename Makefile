@@ -6,7 +6,11 @@ HELM_CHART_DIR = ./helm/hextris
 .PHONY: create-cluster build load deploy clean
 
 create-cluster:
-	kind create cluster --name $(CLUSTER_NAME)
+	@if kind get clusters | grep -q "^$(CLUSTER_NAME)$$"; then \
+		echo "Cluster $(CLUSTER_NAME) already exists, skipping creation"; \
+	else \
+		kind create cluster --name $(CLUSTER_NAME); \
+	fi
 
 build:
 	docker build -t $(IMAGE_NAME):$(IMAGE_TAG) .
